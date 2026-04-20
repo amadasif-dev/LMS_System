@@ -1,0 +1,27 @@
+import mongoose, { Schema, Document } from 'mongoose';
+
+export interface IMessage extends Document {
+  senderId: mongoose.Types.ObjectId;
+  receiverId: mongoose.Types.ObjectId;
+  tenantId: mongoose.Types.ObjectId;
+  content: string;
+  isRead: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const MessageSchema = new Schema<IMessage>(
+  {
+    senderId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    receiverId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    tenantId: { type: Schema.Types.ObjectId, ref: 'Tenant', required: true },
+    content: { type: String, required: true },
+    isRead: { type: Boolean, default: false },
+  },
+  { timestamps: true }
+);
+
+MessageSchema.index({ senderId: 1, receiverId: 1 });
+MessageSchema.index({ tenantId: 1 });
+
+export default mongoose.model<IMessage>('Message', MessageSchema);
